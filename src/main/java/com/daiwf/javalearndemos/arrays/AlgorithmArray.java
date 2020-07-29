@@ -39,41 +39,54 @@ public class AlgorithmArray
 
     public void SearchArray1() {
         for (int i = 0; i < array.length; i++) {
-          if(dest==array[i]){
-              System.out.println("找到位置"+i);
-          }
+            if (dest == array[i]) {
+                System.out.println("找到位置" + i);
+            }
         }
 
     }
 
-
-
     //二分查找，前提是有序的。否则也没法用。
     public void SearchArray2() {
-      int head=0;
-      int end = array.length-1;
-      boolean flag=true;
-      while (head<=end){
-          int middle = (head+end)/2;
-          if(dest==array[middle]){
-              System.out.println("找到了位置为"+i);
-              flag=false;
-          }else if(array[middle]>dest){
-              end=middle-1;
-          }else {
-              head=middle+1;
-          }
-      }
-      if(flag){
-          System.out.println("没找到");
-      }
-
+        int head = 0;
+        int end = array.length - 1;
+        boolean flag = true;
+        while (head <= end) {
+            int middle = (head + end) / 2;
+            if (dest == array[middle]) {
+                System.out.println("找到了位置为" + dest);
+                flag = false;
+            }
+            else if (array[middle] > dest) {
+                end = middle - 1;
+            }
+            else {
+                head = middle + 1;
+            }
+        }
+        if (flag) {
+            System.out.println("没找到");
+        }
 
     }
 
-    //冒泡排序
+    //冒泡排序,主要就是两个两个比如果是升序的话，左边比右边大就调换一下。需要比array3.length-1次
+    @Test public void BubbleSort() {
+        int[] array3 = new int[] { 100, 32, 45, -12, 78, 1, 3, -10 };
+        for (int i = 0; i < array3.length - 1; i++) {
+            for (int j = 0; j < array3.length - 1 - i; j++) {
+                if (array3[j] > array3[j + 1]) {
+                    int tmp = array3[j];
+                    array3[j] = array3[j + 1];
+                    array3[j + 1] = tmp;
+                }
+            }
 
+        }
+        for (int i = 0; i < array3.length; i++) {
+            System.out.println(array3[i]);
+        }
 
-
+    }
 
 }
