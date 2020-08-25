@@ -29,7 +29,6 @@ class Window implements Runnable{
         while(true){
             try{
 
-                //2.调用锁定方法lock()
                 lock.lock();
 
                 if(ticket > 0){
