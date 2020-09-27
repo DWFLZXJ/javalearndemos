@@ -1,6 +1,7 @@
 package com.daiwf.javalearndemos.reflect.demothree;
 
-import com.atguigu.java1.Person;
+
+import com.daiwf.javalearndemos.reflect.demotwo.Person;
 import org.junit.Test;
 
 import java.lang.annotation.Annotation;
