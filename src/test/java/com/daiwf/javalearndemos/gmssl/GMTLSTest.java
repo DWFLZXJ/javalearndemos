@@ -1,19 +1,21 @@
 package com.daiwf.javalearndemos.gmssl;
 
 
-import com.aliyun.gmsse.GMProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.epoint.jsse.provider.EpointJsseProvider;
+import org.epoint.jsse.provider.ProvSSLSessionContext;
 import org.junit.Test;
 
-import java.io.*;
+import javax.net.SocketFactory;
+import javax.net.ssl.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Enumeration;
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
 
 
 
@@ -42,30 +44,25 @@ public class GMTLSTest {
             //String addr = "192.168.220.138";
             int port = 443;
             String uri = "/";
-
-
             Security.addProvider(new BouncyCastleProvider());
             Security.addProvider( new EpointJsseProvider());
-
-
 
             String clientpfxfile = "src/test/resources/client.pfx";
             String pwd = "12345678";
 
             KeyStore pfx = KeyStore.getInstance("PKCS12",new BouncyCastleProvider());
-            //pfx.load(new FileInputStream(pfxfile), pwd.toCharArray());
 
-            //pfx.load(new FileInputStream(pfxfile), pwd.toCharArray());
-           // pfx.load(new FileInputStream(clientpfxfile), pwd.toCharArray());
             pfx.load(new FileInputStream(clientpfxfile),pwd.toCharArray() );
+
+            Enumeration<String> aliases = pfx.aliases();
+            String alias = (String) aliases.nextElement();
+
+           // pfx.setKeyEntry("gmca",pfx.getKey(alias,pwd.toCharArray()),null);
 
             fact = createSocketFactory(pfx, pwd.toCharArray());
             socket = (SSLSocket) fact.createSocket();
             socket.setEnabledCipherSuites(new String[] {"ECDHE_SM2_WITH_SMS4_GCM_SM3"});
-
-
             socket.setTcpNoDelay(true);
-
             socket.connect(new InetSocketAddress(addr, port), 2000);
             socket.setTcpNoDelay(true);
             socket.startHandshake();
@@ -111,27 +108,29 @@ public class GMTLSTest {
     }
     public static SSLSocketFactory createSocketFactory(KeyStore kepair, char[] pwd) throws Exception
     {
-        TrustAllManager[] trust = { new TrustAllManager() };
+
 
         KeyManager[] kms = null;
+        String alias="";
         if (kepair != null)
         {
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
             Enumeration<String> aliases = kepair.aliases();
-            String alias = (String) aliases.nextElement();
-
+             alias = (String) aliases.nextElement();
             kmf.init(kepair, pwd);
 
             kms = kmf.getKeyManagers();
         }
-
+        TrustAllManager[] trust = { new TrustAllManager() };
         SSLContext ctx = SSLContext.getInstance("TLSv1.2",  new EpointJsseProvider());
         SecureRandom secureRandom = new SecureRandom();
+
         ctx.init(kms, trust, secureRandom);
-
-       ctx.getServerSessionContext().setSessionCacheSize(8192);
+        //为了解决alias取不到的问题。
+        ProvSSLSessionContext provSSLSessionContext=  (ProvSSLSessionContext)ctx.getClientSessionContext();
+        provSSLSessionContext.addSession("alias",alias);
+        ctx.getServerSessionContext().setSessionCacheSize(8192);
         ctx.getServerSessionContext().setSessionTimeout(3600);
-
         SSLSocketFactory factory = ctx.getSocketFactory();
         return factory;
     }
