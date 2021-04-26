@@ -109,7 +109,6 @@ public class GMTLSTest {
     public static SSLSocketFactory createSocketFactory(KeyStore kepair, char[] pwd) throws Exception
     {
 
-
         KeyManager[] kms = null;
         String alias="";
         if (kepair != null)

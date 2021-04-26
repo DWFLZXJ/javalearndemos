@@ -23,7 +23,7 @@ import java.util.Enumeration;
  * @作者 daiwf
  * @创建时间 2021/4/16 0016 8:57
  * @版权 Copyright daiwf.
- * @描述 [国密TLShttp请求代码]
+ * @描述 [国密TLShttp单向认证请求代码]
  * @see [相关类/方法]
  * @since [产品/模块版本]
  */

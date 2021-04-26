@@ -30,7 +30,7 @@ public class GMSSETest {
 
     @Test
     public void ClientTest() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException, KeyManagementException {
-        String pfxfile = "src/test/resources/client.pfx";
+       /* String pfxfile = "src/test/resources/client.pfx";
         String pwd = "12345678";
         // 初始化 SSLSocketFactory
         GMProvider provider = new GMProvider();
@@ -73,7 +73,7 @@ public class GMSSETest {
         conn.setSSLSocketFactory(ssf);
         conn.connect();
         System.out.println("used cipher suite:");
-        System.out.println(conn.getCipherSuite());
+        System.out.println(conn.getCipherSuite());*/
 
     }
 
