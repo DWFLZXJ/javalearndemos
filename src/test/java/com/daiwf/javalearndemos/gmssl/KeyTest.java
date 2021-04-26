@@ -1,7 +1,11 @@
 package com.daiwf.javalearndemos.gmssl;
 
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.x509.CertificateFactory;
+import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.junit.Test;
 import sun.misc.BASE64Decoder;
 
@@ -15,6 +19,7 @@ import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 /**
  * @description:
@@ -36,12 +41,19 @@ public class KeyTest {
     @Test
     public void verify() throws GeneralSecurityException, IOException {
         Path userP12Path = Paths.get("src/test/resources/client.pfx");
-        String sign="MEYCIQC1XNWhtD9U6TzDv7Kg0QEtwk9/HXAuSHDU8RIhAhvB4gIhALU7IqEY6ccHt1CMi/G79871WGPf/+xbI83oHNbAlZv2";
+        String sign="MEYCIQDXg/5FZzC6YL2vj4bfekNLHjWxzzTrJTgpUzy6/U02AwIhANOAaolN8rQlKV3vNsf+XuqdpHZf9f0I7Dvm4ENGyi0=";
+
         Signature sg = Signature.getInstance( "1.2.156.10197.1.501",
                 new BouncyCastleProvider());
         Certificate signCert =ReadUserCert(userP12Path,  "12345678");
+        X509Certificate  x509Certificate = (X509Certificate)signCert;
+        ECPublicKey pubKey = (ECPublicKey)  x509Certificate.getPublicKey();
+
+        System.out.println("Pub Point Hex:"
+                + ByteUtils.toHexString(pubKey.getQ().getEncoded(false)).toUpperCase());
         sg.initVerify(signCert);
-        sg.update(new BASE64Decoder().decodeBuffer("0hmjseZONeh3zirYeoEAApFz9gCjdTRlU3iU9nRQWjc=") );
+        sg.update(new BASE64Decoder().decodeBuffer("ci2A7ZskwicmJmbcgl0ts78dRwcRA5BHoZevDQCw64s=") );
+
         if(sg.verify(new BASE64Decoder().decodeBuffer(sign)))
         {
             System.out.println("验签成功");

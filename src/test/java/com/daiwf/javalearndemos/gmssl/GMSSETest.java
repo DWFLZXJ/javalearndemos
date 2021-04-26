@@ -3,16 +3,11 @@ package com.daiwf.javalearndemos.gmssl;
 
 import com.aliyun.gmsse.GMProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.dwf.jsse.provider.BouncyCastleJsseProvider;
 import org.junit.Test;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.*;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URL;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -43,7 +38,7 @@ public class GMSSETest {
 
 
         BouncyCastleProvider bc = new BouncyCastleProvider();
-        KeyStore ks = KeyStore.getInstance("PKCS12",new BouncyCastleProvider());
+        KeyStore ks = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
         ks.load(new FileInputStream(pfxfile), pwd.toCharArray());
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509", bc);
@@ -51,14 +46,13 @@ public class GMSSETest {
         X509Certificate cert = (X509Certificate) cf.generateCertificate(is);
 
         ks.setCertificateEntry("gmca", cert);
-        Enumeration<String> aliases=ks.aliases();
+        Enumeration<String> aliases = ks.aliases();
         String alias = (String) aliases.nextElement();
         String alias1 = (String) aliases.nextElement();
 
-        //ks.setCertificateEntry("client", ks.getCertificateChain(alias)[0]);
-        PrivateKey pk =(PrivateKey) ks.getKey(alias1,pwd.toCharArray());
-        //ks.setKeyEntry("prikey",pk.getEncoded(),ks.getCertificateChain(alias1));
-       // ks.setKeyEntry("prikey",ks.getKey(alias,pwd.toCharArray()),pwd.toCharArray(),ks.getCertificateChain(alias));
+
+        PrivateKey pk = (PrivateKey) ks.getKey(alias1, pwd.toCharArray());
+
 
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("X509", provider);
         tmf.init(ks);
@@ -67,9 +61,7 @@ public class GMSSETest {
         kmf.init(ks, pwd.toCharArray());
 
 
-
         sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
 
 
         SSLSocketFactory ssf = sc.getSocketFactory();
@@ -84,10 +76,6 @@ public class GMSSETest {
         System.out.println(conn.getCipherSuite());
 
     }
-
-
-
-
 
 
 }

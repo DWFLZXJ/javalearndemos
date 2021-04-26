@@ -3,7 +3,7 @@ package com.daiwf.javalearndemos.gmssl;
 
 import com.aliyun.gmsse.GMProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.dwf.jsse.provider.BouncyCastleJsseProvider;
+import org.epoint.jsse.provider.EpointJsseProvider;
 import org.junit.Test;
 
 import java.io.*;
@@ -11,6 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Enumeration;
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
 
@@ -33,27 +34,31 @@ public class GMTLSTest {
         SocketFactory fact = null;
         SSLSocket socket = null;
 
-        System.out.println("Usage: java -cp GMExample.jar client.Client2 addr port");
+        System.out.println("Usage: java TLS Client");
 
         try
         {
             String addr = "139.196.50.80";
+            //String addr = "192.168.220.138";
             int port = 443;
             String uri = "/";
 
 
             Security.addProvider(new BouncyCastleProvider());
-            Security.addProvider( new BouncyCastleJsseProvider());
-		/*	Security.insertProviderAt((Provider)Class.forName("cn.gmssl.jce.provider.GMJCE").newInstance(), 1);
-			Security.insertProviderAt((Provider)Class.forName("cn.gmssl.jsse.provider.GMJSSE").newInstance(), 2);*/
+            Security.addProvider( new EpointJsseProvider());
 
-            String pfxfile = "src/test/resources/client.pfx";
+
+
+            String clientpfxfile = "src/test/resources/client.pfx";
             String pwd = "12345678";
 
             KeyStore pfx = KeyStore.getInstance("PKCS12",new BouncyCastleProvider());
             //pfx.load(new FileInputStream(pfxfile), pwd.toCharArray());
 
-            pfx.load(new FileInputStream(pfxfile), pwd.toCharArray());
+            //pfx.load(new FileInputStream(pfxfile), pwd.toCharArray());
+           // pfx.load(new FileInputStream(clientpfxfile), pwd.toCharArray());
+            pfx.load(new FileInputStream(clientpfxfile),pwd.toCharArray() );
+
             fact = createSocketFactory(pfx, pwd.toCharArray());
             socket = (SSLSocket) fact.createSocket();
             socket.setEnabledCipherSuites(new String[] {"ECDHE_SM2_WITH_SMS4_GCM_SM3"});
@@ -112,13 +117,16 @@ public class GMTLSTest {
         if (kepair != null)
         {
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            Enumeration<String> aliases = kepair.aliases();
+            String alias = (String) aliases.nextElement();
+
             kmf.init(kepair, pwd);
 
             kms = kmf.getKeyManagers();
         }
 
-        SSLContext ctx = SSLContext.getInstance("TLSv1.2",  new BouncyCastleJsseProvider());
-        java.security.SecureRandom secureRandom = new java.security.SecureRandom();
+        SSLContext ctx = SSLContext.getInstance("TLSv1.2",  new EpointJsseProvider());
+        SecureRandom secureRandom = new SecureRandom();
         ctx.init(kms, trust, secureRandom);
 
        ctx.getServerSessionContext().setSessionCacheSize(8192);
