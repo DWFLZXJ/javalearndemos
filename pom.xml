@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>com.epoint.ztb</groupId>
 			<artifactId>epointgmssl</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 		<!--<dependency>
 			<groupId>org.bouncycastle</groupId>
