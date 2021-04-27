@@ -36,7 +36,7 @@ public class GMHTTPClientVerifyRequestTest {
         KeyStore keyStore = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
         keyStore.load(new FileInputStream(pfxfile), pwd.toCharArray());
         SSLSocketFactory sslSocketFactory = createSocketFactory(keyStore, pwd.toCharArray());
-        URL serverUrl = new URL("https://139.196.50.80/");
+        URL serverUrl = new URL("https://139.196.50.80/EpQzFileServer/mcertofdservice/doAction");
 
         StringBuilder bodyBuilder = new StringBuilder();
         InputStreamReader bis = null;
@@ -53,8 +53,12 @@ public class GMHTTPClientVerifyRequestTest {
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestProperty("Content-Type", "text/xml;charset=UTF-8");
+
             conn.connect();
-            String requestxml = "测试内容";
+            String requestxml = "{\n" +
+                    "    \"action\": \"OFDActions.initLicense\"\n" +
+                    "}";
+
             printWriter = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             printWriter.write(requestxml);
             printWriter.flush();// flush输出流的缓冲
