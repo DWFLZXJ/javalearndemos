@@ -32,7 +32,7 @@ public class GMHTTPGetClientVerifyRequestTest {
 
     @Test
     public void ClientTest() throws Exception {
-        String pfxfile = "src/test/resources/client.pfx";
+        String pfxfile = "src/test/resources/clientnew_en.pfx";
         String pwd = "12345678";
         // 初始化 SSLSocketFactory
         Security.addProvider(new BouncyCastleProvider());
