@@ -31,7 +31,7 @@ public class Sm2Test {
 	@Test
 	public void sm2test(){
 
-
+		System.out.println(1<<1);
 
 	}
 

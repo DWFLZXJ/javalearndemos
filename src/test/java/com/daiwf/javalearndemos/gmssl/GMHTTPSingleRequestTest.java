@@ -31,7 +31,7 @@ public class GMHTTPSingleRequestTest {
 
     @Test
     public void ClientTest() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException, KeyManagementException {
-        String pfxfile = "src/test/resources/client.pfx";
+        String pfxfile = "src/test/resources/signbidder.pfx";
         String pwd = "12345678";
         // 初始化 SSLSocketFactory
         Security.addProvider(new BouncyCastleProvider());
@@ -43,7 +43,7 @@ public class GMHTTPSingleRequestTest {
         sslContext.getServerSessionContext().setSessionCacheSize(8192);
         sslContext.getServerSessionContext().setSessionTimeout(3600);
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-        URL serverUrl = new URL("https://139.196.50.80/");
+        URL serverUrl = new URL("https://192.168.219.51/");
         HttpsURLConnection conn = (HttpsURLConnection) serverUrl.openConnection();
         conn.setRequestMethod("GET");
         // 设置 SSLSocketFactory

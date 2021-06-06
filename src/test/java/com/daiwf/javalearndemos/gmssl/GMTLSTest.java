@@ -40,14 +40,14 @@ public class GMTLSTest {
 
         try
         {
-            String addr = "139.196.50.80";
+            String addr = "192.168.219.51";
             //String addr = "192.168.220.138";
             int port = 443;
             String uri = "/";
             Security.addProvider(new BouncyCastleProvider());
             Security.addProvider( new EpointJsseProvider());
 
-            String clientpfxfile = "src/test/resources/client.pfx";
+            String clientpfxfile = "src/test/resources/signbidder.pfx";
             String pwd = "12345678";
 
             KeyStore pfx = KeyStore.getInstance("PKCS12",new BouncyCastleProvider());

@@ -1,27 +1,29 @@
 package com.daiwf.javalearndemos.gmssl;
 
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.epoint.jsse.provider.EpointJsseProvider;
 import org.epoint.jsse.provider.ProvSSLSessionContext;
-import org.junit.Test;
 
 import javax.net.ssl.*;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.security.*;
-import java.security.cert.CertificateException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.Security;
 import java.util.Enumeration;
 
+/**
+ * @description:
+ * @author: daiwf
+ * @time: 2021/5/28 0028
+ */
+public class GMClientverify {
 
-
-
-
-public class GMHTTPClientVerifyRequestTest {
-
-    @Test
     public void ClientTest() throws Exception {
-        String pfxfile = "src/test/resources/signbidder.pfx";
+        String pfxfile = "D:\\KeepLearn\\daiwfcode\\javaleardemos\\javalearndemos\\src\\test\\resources\\client.pfx";
         String pwd = "12345678";
         // 初始化 SSLSocketFactory
         Security.addProvider(new BouncyCastleProvider());
@@ -29,7 +31,8 @@ public class GMHTTPClientVerifyRequestTest {
         KeyStore keyStore = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
         keyStore.load(new FileInputStream(pfxfile), pwd.toCharArray());
         SSLSocketFactory sslSocketFactory = createSocketFactory(keyStore, pwd.toCharArray());
-        URL serverUrl = new URL("https://192.168.219.51/");
+        URL serverUrl = new URL("https://192.168.220.144/");
+        //URL serverUrl = new URL("https://139.196.50.80/");
 
         StringBuilder bodyBuilder = new StringBuilder();
         InputStreamReader bis = null;
@@ -38,24 +41,15 @@ public class GMHTTPClientVerifyRequestTest {
         try {
 
             HttpsURLConnection conn = (HttpsURLConnection) serverUrl.openConnection();
-
             // 设置 SSLSocketFactory
             conn.setSSLSocketFactory(sslSocketFactory);
-            // conn.setRequestMethod("GET");
-            conn.setRequestMethod("POST");// 提交模式
-            conn.setDoOutput(true);
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(false);
             conn.setDoInput(true);
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
             conn.setRequestProperty("Content-Type", "text/xml;charset=UTF-8");
-
             conn.connect();
-            String requestxml = "{\n" +
-                    "    \"action\": \"OFDActions.initLicense\"\n" +
-                    "}";
-
-            printWriter = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
-            printWriter.write(requestxml);
-            printWriter.flush();// flush输出流的缓冲
-
             // 开始获取数据
 
             if (200 == conn.getResponseCode()) {
@@ -79,13 +73,10 @@ public class GMHTTPClientVerifyRequestTest {
             if (printWriter != null) {
                 printWriter.close();
             }
-
         }
-
         //注意nginx是不允许静态资源用post的。会返回405 Not Allowed
-        System.out.println("返回数据：" + bodyBuilder.toString());
-
-
+       // System.out.println("返回数据：" + bodyBuilder.toString());
+        System.out.println("返回数据：" );
     }
 
     public static SSLSocketFactory createSocketFactory(KeyStore kepair, char[] pwd) throws Exception {
@@ -97,7 +88,6 @@ public class GMHTTPClientVerifyRequestTest {
             Enumeration<String> aliases = kepair.aliases();
             alias = (String) aliases.nextElement();
             kmf.init(kepair, pwd);
-
             kms = kmf.getKeyManagers();
         }
         TrustAllManager[] trust = {new TrustAllManager()};
@@ -113,6 +103,4 @@ public class GMHTTPClientVerifyRequestTest {
         SSLSocketFactory factory = ctx.getSocketFactory();
         return factory;
     }
-
-
 }

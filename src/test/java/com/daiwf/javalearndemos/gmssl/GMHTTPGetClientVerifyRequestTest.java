@@ -31,8 +31,14 @@ import java.util.Enumeration;
 public class GMHTTPGetClientVerifyRequestTest {
 
     @Test
+    public void PressureTest(){
+
+    }
+
+
+    @Test
     public void ClientTest() throws Exception {
-        String pfxfile = "src/test/resources/clientnew_en.pfx";
+        String pfxfile = "src/test/resources/signbidder.pfx";
         String pwd = "12345678";
         // 初始化 SSLSocketFactory
         Security.addProvider(new BouncyCastleProvider());
@@ -40,7 +46,8 @@ public class GMHTTPGetClientVerifyRequestTest {
         KeyStore keyStore = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
         keyStore.load(new FileInputStream(pfxfile), pwd.toCharArray());
         SSLSocketFactory sslSocketFactory = createSocketFactory(keyStore, pwd.toCharArray());
-        URL serverUrl = new URL("https://139.196.50.80/");
+        URL serverUrl = new URL("https://192.168.219.51/");
+        //URL serverUrl = new URL("https://139.196.50.80/");
 
         StringBuilder bodyBuilder = new StringBuilder();
         InputStreamReader bis = null;
@@ -49,7 +56,6 @@ public class GMHTTPGetClientVerifyRequestTest {
         try {
 
             HttpsURLConnection conn = (HttpsURLConnection) serverUrl.openConnection();
-
             // 设置 SSLSocketFactory
             conn.setSSLSocketFactory(sslSocketFactory);
              conn.setRequestMethod("GET");
@@ -82,13 +88,9 @@ public class GMHTTPGetClientVerifyRequestTest {
             if (printWriter != null) {
                 printWriter.close();
             }
-
         }
-
         //注意nginx是不允许静态资源用post的。会返回405 Not Allowed
         System.out.println("返回数据：" + bodyBuilder.toString());
-
-
     }
 
     public static SSLSocketFactory createSocketFactory(KeyStore kepair, char[] pwd) throws Exception {
@@ -100,7 +102,6 @@ public class GMHTTPGetClientVerifyRequestTest {
             Enumeration<String> aliases = kepair.aliases();
             alias = (String) aliases.nextElement();
             kmf.init(kepair, pwd);
-
             kms = kmf.getKeyManagers();
         }
         TrustAllManager[] trust = {new TrustAllManager()};
