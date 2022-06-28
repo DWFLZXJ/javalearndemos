@@ -1,8 +1,6 @@
 package com.daiwf.javalearndemos.gmssl;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
 /**
  * 创建线程的方式四：使用线程池
@@ -20,17 +18,21 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @create 2021-05-28 下午 6:30
  */
 
-class ClientThread implements Runnable{
+class ClientThread implements Callable {
+    CountDownLatch latch;
+    public ClientThread(CountDownLatch latch){
+        this.latch=latch;
+    }
 
     @Override
-    public void run() {
+    public Object call() {
         GMClientverify client = new GMClientverify();
         try {
-            client.ClientTest();
+          return client.ClientTest(latch);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return false;
     }
 }
 
@@ -38,25 +40,32 @@ class ClientThread implements Runnable{
 
 public class PressureTest {
 
-    public static void main(String[] args) {
+
+
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        int count=0;
+        int times=1;
+        int threads=1000;
+        CountDownLatch latch = new CountDownLatch(times);
         //1. 提供指定线程数量的线程池
-        ExecutorService service = Executors.newFixedThreadPool(1000);
-        ThreadPoolExecutor service1 = (ThreadPoolExecutor) service;
+        ExecutorService service = Executors.newFixedThreadPool(threads);
         //设置线程池的属性
 
-//        service1.setCorePoolSize(15);
-//        service1.setKeepAliveTime();
-
-
         //2.执行指定的线程的操作。需要提供实现Runnable接口或Callable接口实现类的对象
-        for (int i=0;i<20000;i++){
-            service.execute(new ClientThread());//适合适用于Runnable
+        long startTime=System.currentTimeMillis();
+        for (int i=0;i<times;i++){
+            //service.execute();//适合适用于Runnable
+            Future<Object> future =  service.submit(new ClientThread(latch));
+            Boolean result=(Boolean)future.get();
+            if(!result){
+                count++;
+            }
         }
-
-
-//        service.submit(Callable callable);//适合使用于Callable
-        //3.关闭连接池
+        latch.await();
+        long endTime=System.currentTimeMillis();
+        float excTime=(float)(endTime-startTime)/1000;
         service.shutdown();
+        System.out.println("线程数："+threads+";执行"+times+"次请求耗时："+excTime+"s;失败率："+count/times);
     }
 
 }

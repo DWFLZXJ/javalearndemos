@@ -9,7 +9,11 @@ import java.util.Arrays;
  */
 public class ArraysTest {
 	public static void main(String[] args) {
-		
+
+		//int[][] arrtest1 = new int[][]{{1,2},{1,2,3}};
+
+
+
 		//1.boolean equals(int[] a,int[] b):判断两个数组是否相等。
 		int[] arr1 = new int[]{1,2,3,4};
 		int[] arr2 = new int[]{1,3,2,4};

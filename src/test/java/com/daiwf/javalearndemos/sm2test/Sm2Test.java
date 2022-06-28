@@ -3,6 +3,8 @@ package com.daiwf.javalearndemos.sm2test;
 
 import org.junit.Test;
 
+import java.util.Random;
+
 public class Sm2Test {
 	
 
@@ -31,7 +33,16 @@ public class Sm2Test {
 	@Test
 	public void sm2test(){
 
-		System.out.println(1<<1);
+	 Random rand = new Random();
+		int randtest =rand.nextInt(10);
+		System.out.println(randtest);
+
+		long test =7060487741508412814L;
+
+		String str ="7060487741508412814";
+		long newln =Long.valueOf(str).longValue();
+		System.out.println(newln);
+
 
 	}
 

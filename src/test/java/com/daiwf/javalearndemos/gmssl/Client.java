@@ -1,5 +1,7 @@
 package com.daiwf.javalearndemos.gmssl;
 
+import org.junit.Test;
+
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
@@ -22,7 +24,8 @@ public class Client {
         socket.setSoTimeout(300000);
 
         // 连接本地，端口2000；超时时间3000ms
-        socket.connect(new InetSocketAddress(Inet4Address.getLocalHost(), 2000), 3000);
+        //socket.connect(new InetSocketAddress(Inet4Address.getLocalHost(), 2000), 3000);
+        socket.connect(new InetSocketAddress("192.168.113.128", 2000), 3000);
 
         System.out.println("已发起服务器连接，并进入后续流程～");
         System.out.println("客户端信息：" + socket.getLocalAddress() + " P:" + socket.getLocalPort());
@@ -65,6 +68,16 @@ public class Client {
         socketPrintStream.close();
         socketBufferedReader.close();
 
+    }
+
+    @Test
+    public void test(){
+        String tddata ="1111";
+        if (tddata != null) {
+
+            System.out.println("返回客户端数据：" + tddata);
+
+        }
     }
 
 

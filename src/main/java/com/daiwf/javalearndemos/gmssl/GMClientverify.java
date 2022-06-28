@@ -14,6 +14,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Enumeration;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @description:
@@ -22,8 +23,8 @@ import java.util.Enumeration;
  */
 public class GMClientverify {
 
-    public void ClientTest() throws Exception {
-        String pfxfile = "D:\\KeepLearn\\daiwfcode\\javaleardemos\\javalearndemos\\src\\test\\resources\\client.pfx";
+    public boolean ClientTest(CountDownLatch latch) throws Exception {
+        String pfxfile = "D:\\MyWorkSpace\\workdir\\2021\\住建代码\\Trunk\\code\\target\\signbidder.pfx";
         String pwd = "12345678";
         // 初始化 SSLSocketFactory
         Security.addProvider(new BouncyCastleProvider());
@@ -31,9 +32,8 @@ public class GMClientverify {
         KeyStore keyStore = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
         keyStore.load(new FileInputStream(pfxfile), pwd.toCharArray());
         SSLSocketFactory sslSocketFactory = createSocketFactory(keyStore, pwd.toCharArray());
-        URL serverUrl = new URL("https://192.168.220.144/");
+        URL serverUrl = new URL("https://192.168.113.69/HURFrame/rest/gm/v1/test");
         //URL serverUrl = new URL("https://139.196.50.80/");
-
         StringBuilder bodyBuilder = new StringBuilder();
         InputStreamReader bis = null;
         InputStream inputStream = null;
@@ -43,14 +43,21 @@ public class GMClientverify {
             HttpsURLConnection conn = (HttpsURLConnection) serverUrl.openConnection();
             // 设置 SSLSocketFactory
             conn.setSSLSocketFactory(sslSocketFactory);
-            conn.setRequestMethod("GET");
-            conn.setDoOutput(false);
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setConnectTimeout(30000);
             conn.setReadTimeout(30000);
-            conn.setRequestProperty("Content-Type", "text/xml;charset=UTF-8");
+            conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
             conn.connect();
             // 开始获取数据
+            String requestxml = "{\n" +
+                    "    \"port\":\"2000\",\n" +
+                    "    \"content\":\"hellodaiwf\"\n" +
+                    "}";
+            printWriter = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
+            printWriter.write(requestxml);
+            printWriter.flush();// flush输出流的缓冲
 
             if (200 == conn.getResponseCode()) {
                 inputStream = conn.getInputStream();
@@ -76,7 +83,16 @@ public class GMClientverify {
         }
         //注意nginx是不允许静态资源用post的。会返回405 Not Allowed
        // System.out.println("返回数据：" + bodyBuilder.toString());
-        System.out.println("返回数据：" );
+        String result=bodyBuilder.toString();
+
+        System.out.println("返回数据：" +result);
+        latch.countDown();
+        if(result.length()==43){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public static SSLSocketFactory createSocketFactory(KeyStore kepair, char[] pwd) throws Exception {
